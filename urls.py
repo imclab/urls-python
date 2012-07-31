@@ -4,13 +4,13 @@
 """urls - A quick and dirty url parser and processor.
 
 Usage:
-  urls [<text> [--pbcopy] [--open] [--twitter] [--no-output] [--html] [--debug]]
+  urls [<text> [--copy] [--open] [--twitter] [--no-output] [--html] [--debug]]
   urls -h | --help
   urls --version
 
 Options:
   -h --help       Show this screen.
-  -c --pbcopy     Copy the first URL found in the text to the pasteboard.
+  -c --copy     Copy the first URL found in the text to the pasteboard.
   -o --open       Open the first URL found in the text.
   -t --twitter    Parse text for twitter usernames and hashtags and convert them to twitter URLs
   -n --no-output  Do not output urls'
@@ -80,8 +80,8 @@ def main():
 		if not arguments['--no-output']:
 			print ''.join(set(theURLs))
 
-	if arguments['--pbcopy']:
-		envoy.run('echo \'%s\' | pbcopy' % theURLs[0])
+	if arguments['--copy']:
+		envoy.run('echo \'%s\' | copy' % theURLs[0])
 
 	if arguments['--open']:
 		envoy.run('open \'%s\'' % theURLs[0])
