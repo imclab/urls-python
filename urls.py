@@ -60,9 +60,7 @@ def URLsForString(s, twitter = False):
 
 	return theURLs
 
-################################################################################
-	
-if __name__ == '__main__':
+def main():
 	arguments = docopt.docopt(__doc__, version='urls 0.1')
 
 	if arguments['--debug']:
@@ -87,3 +85,8 @@ if __name__ == '__main__':
 
 	if arguments['--open']:
 		envoy.run('open \'%s\'' % theURLs[0])
+
+################################################################################
+	
+if __name__ == '__main__':
+	main()
