@@ -31,11 +31,13 @@ import envoy # pip install --user envoy
 
 theParser = ttp.Parser()
 
+# git@github.com:schwa/CoreTextToy.git
+
 thePatterns = [
-	re.compile(r'git@.+:.+?\.git'),
-	
+	{ 'pattern': re.compile(r'git@.+:.+?\.git'), 'stop': True },
+
 	# From http://daringfireball.net/2010/07/improved_regex_for_matching_urls
-	re.compile(r'''(?i)\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))'''),
+	{ 'pattern': re.compile(r'''(?i)\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))'''), 'stop': False},
 	]
 
 def URLsForString(s, twitter = False):
@@ -53,10 +55,14 @@ def URLsForString(s, twitter = False):
 			theURLs.append('http://twitter.com/#!/search/#%s' % theTag)
 
 	# Use some crude
-	for thePattern in thePatterns:
+	for thePatternDict in thePatterns:
+		thePattern = thePatternDict['pattern']
 		theResults = re.findall(thePattern, s)
-		p = [theResult[0] for theResult in theResults]
-		theURLs += p
+		if theResults:
+			p = [theResult if type(theResult) == type('') else theResult[0] for theResult in theResults]
+			theURLs += p
+			if thePatternDict['stop']:
+				break
 
 	return theURLs
 
@@ -78,10 +84,11 @@ def main():
 			sys.stderr.write('# No URLs found\n')
 	else:
 		if not arguments['--no-output']:
-			print ''.join(set(theURLs))
+			print '\n'.join(set(theURLs))
 
 	if arguments['--copy']:
-		envoy.run('echo \'%s\' | copy' % theURLs[0])
+		theCommand = 'echo \'%s\' | pbcopy' % theURLs[0]
+		envoy.run(theCommand)
 
 	if arguments['--open']:
 		envoy.run('open \'%s\'' % theURLs[0])
